@@ -1,121 +1,132 @@
-# Project Vision — Agentic Ticket Assistant
+# Enterprise Agentic Ticket Resolution Assistant
 
-> Day 1 deliverable. This document anchors the whole project: what we're
-> building, why, for whom, and — critically — what "done well" means.
+## 1. Problem Statement
 
-## The one-sentence pitch
+In IT Support and SRE environments, incident tickets are often escalated from L2 to L3 or DevOps because support teams may not always have enough context, similar incident history, approved remediation steps, or observability evidence.
 
-An agentic assistant for IT Support and SRE teams that triages incoming
-tickets, grounds its analysis in past tickets and knowledge-base articles,
-proposes resolutions, and escalates to a human whenever it isn't confident —
-built to run reliably in production, not just to demo.
+This increases MTTR, reduces L2 autonomy, creates repeated escalations, and increases workload on expert teams.
 
-## The problem
+## 2. Project Objective
 
-IT support and SRE teams drown in repetitive tickets. Each one costs time to
-read, classify, route to the right group, and resolve — and much of that work
-repeats, because similar incidents have been solved before. The knowledge to
-resolve a ticket usually already exists, scattered across past tickets,
-runbooks, and KB articles; it's just not surfaced at the moment it's needed.
+The objective of this project is to build an Enterprise Agentic Ticket Resolution Assistant that helps support teams analyze incidents, improve ticket quality, search similar past incidents, retrieve relevant knowledge articles, analyze observability signals, recommend remediation steps, request human approval, and update the incident with an audit trail.
 
-## The opportunity
+## 3. Main Use Case
 
-This domain is a strong fit for an agent because:
+### UC1 — Agentic Incident Auto-Remediation with Human Approval
 
-- **High volume, high repetition** — automation leverage is large.
-- **Grounded in retrievable text** — runbooks, past tickets, and KB articles
-  are exactly what retrieval-augmented generation needs.
-- **A natural safety boundary** — reading logs and suggesting fixes is
-  low-risk; taking destructive actions (restarting services, closing tickets)
-  requires human approval. This gives us a clean place to demonstrate
-  human-in-the-loop control.
-- **Measurable success** — resolution rate, time-to-triage, and escalation
-  rate are real, trackable metrics, not vibes.
+A multi-agent workflow detects application inaccessibility from an incident ticket, analyzes logs and monitoring signals, retrieves approved remediation steps, requests human approval, triggers a controlled automation, validates service recovery, updates the incident, and creates or drafts a problem record if the root cause is confirmed or recurring.
 
-## What it is — and is not
+## 4. Target Users
 
-This is an **agent**, not a chatbot and not a plain RAG system:
+- L2 Support Engineers
+- SRE Teams
+- DevOps Teams
+- Incident Managers
+- Automation Teams
+- Problem Managers
 
-- A **chatbot** would only answer questions from the model's own knowledge.
-- A **RAG system** would answer grounded in our documents, but still only
-  produce text.
-- Our **agent** decides its own steps and *acts* via tools: it looks up
-  similar tickets, checks logs, reads dashboards, drafts an update, and
-  escalates — choosing which of these to do based on the ticket in front of
-  it.
+## 5. Core Capabilities
 
-Where the steps are genuinely predictable, we will deliberately use simpler
-**workflow** patterns rather than full agent autonomy, because workflows are
-more reliable, cheaper, and easier to debug. Choosing the simplest pattern
-that works is a core design principle of this project, not a compromise.
+The assistant will be able to:
 
-## Who it's for
+- Read an incident ticket
+- Check ticket quality
+- Rewrite unclear ticket descriptions
+- Detect missing information
+- Search similar past incidents
+- Retrieve relevant KB articles and runbooks
+- Analyze logs, metrics, and alerts
+- Recommend probable root cause
+- Suggest remediation steps
+- Ask for human approval before risky actions
+- Trigger approved automation only after approval
+- Validate service recovery
+- Update the incident
+- Recommend or draft a problem record
+- Maintain an audit trail
 
-- **Primary:** L1/L2 support engineers who triage and resolve tickets.
-- **Secondary:** SRE on-call engineers handling incidents.
-- **Stakeholder:** the support team lead, who cares about throughput,
-  escalation rate, and not introducing risk.
+## 6. Agentic AI Capabilities Used
 
-## Scope (v1)
+This project will use:
 
-**In scope**
-- Ticket quality scoring and missing-information detection
-- Assignment-group and priority prediction
-- Surfacing similar past tickets and relevant KB articles (RAG)
-- Drafting a suggested resolution or next step
-- Escalating to a human when confidence is low or an action is risky
+- Reasoning
+- Planning
+- Tool use
+- RAG
+- Memory
+- Multi-agent collaboration
+- MCP-style tool access
+- A2A-style agent communication
+- Human-in-the-loop approval
+- Guardrails
+- Observability
+- Evaluation
+- Security and governance
 
-**Out of scope (for v1)**
-- Taking destructive or irreversible actions automatically
-- Integrating with a live production ticketing system (we use realistic
-  sample data; integration is a later milestone)
-- Handling tickets outside IT support / SRE
+## 7. Technical Stack
 
-## Reliability goals
+- FastAPI for backend API
+- PostgreSQL for structured data
+- Chroma for vector search
+- LangChain for RAG chains and tools
+- LangGraph for agentic workflows
+- Streamlit for demo UI
+- Docker Compose for local deployment
+- OpenTelemetry-style tracing for observability
 
-Reliability is a first-class goal of this project. A demo that works once is
-not the target; a system that behaves predictably, fails safely, and can be
-debugged is. These targets will be measured by the evaluation harness built
-later in the project, and refined as we gather real numbers.
+## 8. Main Agents
 
-| Goal | Target (initial) | Why it matters |
-|---|---|---|
-| **Groundedness** | Every factual claim traceable to a retrieved source | Prevents confident hallucination — the top failure mode |
-| **Escalation rate** | The agent escalates rather than guesses when unsure | A high-but-honest escalation rate beats a low-but-wrong one |
-| **Human-override rate** | Track how often a human corrects the agent | The core trust metric; should fall over time as the agent improves |
-| **Tool correctness** | Tools called with valid inputs, errors handled | A failing tool must never crash the agent |
-| **Safe-by-default** | No risky action without explicit human approval | The non-negotiable safety boundary |
+- Supervisor Agent
+- Ticket Quality Agent
+- Triage Agent
+- Knowledge Agent
+- Similar Incident Agent
+- Observability Agent
+- Remediation Agent
+- Governance Agent
+- Problem Management Agent
 
-> Note: numeric thresholds are intentionally left open here. We set them once
-> the evaluation harness (later milestone) produces a baseline — setting
-> targets before measurement would be guesswork.
+## 9. Reliability Goals
 
-## How we'll know it works
+The project will track:
 
-- A golden dataset of realistic tickets with expected outcomes.
-- Regression tests that run on every change.
-- Observability: traces of every tool call, plus the metrics above on a
-  simple dashboard.
+- L3 escalation reduction
+- Human override rate
+- Cost per ticket analysis
+- Confidence score accuracy
+- MTTR improvement
+- KB reuse rate
+- Successful remediation rate
+- False recommendation rate
+- Post-remediation validation success rate
 
-## Guiding principles
+## 10. Success Metrics
 
-1. **Reliability over capability.** Boring and dependable beats clever and
-   flaky.
-2. **Simplest pattern that works.** Workflow before agent; one tool before
-   many.
-3. **Grounded, not guessed.** Answers cite their sources.
-4. **Safe by default.** The human stays in control of anything risky.
-5. **Observable and testable.** If we can't measure it, we can't trust it.
+The assistant will be considered successful if it can:
 
-## Roadmap at a glance
+- Improve ticket descriptions
+- Detect missing information
+- Recommend relevant KB articles
+- Find similar incidents
+- Provide evidence-based remediation suggestions
+- Avoid unsupported root cause claims
+- Request approval before risky actions
+- Produce useful audit logs
+- Reduce unnecessary escalations
 
-This project is built over a structured roadmap: LLM and reasoning foundations,
-tools and function calling, planning and workflows, memory and RAG,
-architecture and state, human-in-the-loop and guardrails, multi-agent systems,
-MCP integration, observability, evaluation, security and governance, the IT
-support use case, the application, and final packaging.
+## 11. Final GitHub Deliverable
 
----
+The final deliverable will be a working prototype that accepts an incident ticket and returns:
 
-*This is a living document. It will be revised as the design evolves — and
-that revision history is itself part of the story the project tells.*
+- Rewritten description
+- Missing information
+- Similar incidents
+- Recommended KB articles
+- Observability findings
+- Probable root cause
+- Recommended remediation steps
+- Confidence score
+- Approval requirement
+- Post-remediation validation result
+- Incident update summary
+- Problem record recommendation
